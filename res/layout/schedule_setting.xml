@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/schedule_setting_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="启动提醒"
+            android:textSize="25dp" />
+
+        <ImageButton
+            android:id="@+id/schedule_setting_isAlarmEnable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/d_alarm_enable" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/schedule_setting_btn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/schedule_setting_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="删除" />
+
+        <Button
+            android:id="@+id/schedule_setting_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="重置" />
+
+        <Button
+            android:id="@+id/schedule_setting_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="提交" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/schedule_setting_infoList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/schedule_setting_btn"
+        android:layout_below="@id/schedule_setting_alarm" >
+    </ListView>
+
+</RelativeLayout>

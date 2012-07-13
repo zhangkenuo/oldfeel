@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/arc_hf_file_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/arc_hf_file_icon_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/arc_hf_file_icon"
+        android:layout_alignRight="@id/arc_hf_file_icon"
+        android:background="@color/none" />
+
+    <TextView
+        android:id="@+id/arc_hf_file_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/arc_hf_file_icon"
+        android:gravity="center"
+        android:textColor="@color/yellow"
+        android:textSize="20dp" />
+
+</RelativeLayout>

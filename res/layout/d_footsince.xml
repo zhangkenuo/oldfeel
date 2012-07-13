@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.baidu.mapapi.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="true" />
+
+    <LinearLayout
+        android:id="@+id/d_footsince_edit_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="3dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/d_footsince_et_footName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/d_footsince_btn_camera"
+                style="@style/btn_wrap"
+                android:src="@drawable/d_footsince_camera" />
+
+            <ImageButton
+                android:id="@+id/d_footsince_btn_browseImg"
+                style="@style/btn_wrap"
+                android:src="@drawable/d_file_icon_img" />
+
+            <ImageButton
+                android:id="@+id/d_footsince_btn_browseVideo"
+                style="@style/btn_wrap"
+                android:src="@drawable/d_file_icon_video" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
