@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, OldfeelActivity!</string>
     <string name="app_name">老感工具箱</string>
+    <string name="file_name">文件名</string>
+    <string name="file_type">格式</string>
+    <string name="file_size">大小</string>
+    <string name="file_lastmodified">最后修改时间</string>
+    <string name="file_contents">内容</string>
 
 </resources>

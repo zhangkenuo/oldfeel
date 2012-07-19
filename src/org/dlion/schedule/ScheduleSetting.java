@@ -2,8 +2,7 @@
 
 import java.util.Calendar;
 
-import org.dlion.alarm.DAlarmReceiver;
-import org.dlion.oldfeel.OldfeelDBManager;
+import org.dlion.oldfeel.DBHelper;
 import org.dlion.oldfeel.R;
 
 import android.app.Activity;
@@ -32,7 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class DScheduleSetting extends Activity {
+public class ScheduleSetting extends Activity {
 	int _id;
 	int enable;
 	int weekDay;
@@ -137,8 +136,8 @@ public class DScheduleSetting extends Activity {
 	 */
 	protected void scheduleDelete() {
 		boolean isEnable = (enable == 1) ? true : false;
-		new DScheduleManager(DScheduleSetting.this).scheduleCancel(am,
-				isEnable, _id); // 删除课程表
+		new ScheduleManager(ScheduleSetting.this).scheduleCancel(am, isEnable,
+				_id); // 删除课程表
 		finish();
 	}
 
@@ -146,10 +145,10 @@ public class DScheduleSetting extends Activity {
 	 * 设置铃声
 	 */
 	protected void setRingName() {
-		final Dialog dialog = new Dialog(DScheduleSetting.this);
-		ListView view = new ListView(DScheduleSetting.this);
+		final Dialog dialog = new Dialog(ScheduleSetting.this);
+		ListView view = new ListView(ScheduleSetting.this);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-				DScheduleSetting.this, android.R.layout.simple_list_item_1,
+				ScheduleSetting.this, android.R.layout.simple_list_item_1,
 				ringNames);
 		view.setAdapter(adapter);
 		view.setOnItemClickListener(new OnItemClickListener() {
@@ -174,7 +173,7 @@ public class DScheduleSetting extends Activity {
 	protected void setClassRoom() {
 		final EditText et = new EditText(getApplicationContext());
 		et.setHint("输入教室名称");
-		new AlertDialog.Builder(DScheduleSetting.this).setView(et)
+		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 					@Override
@@ -191,7 +190,7 @@ public class DScheduleSetting extends Activity {
 	protected void setTeacherName() {
 		final EditText et = new EditText(getApplicationContext());
 		et.setHint("输入课程教师名称");
-		new AlertDialog.Builder(DScheduleSetting.this).setView(et)
+		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 					@Override
@@ -224,7 +223,7 @@ public class DScheduleSetting extends Activity {
 				calendar.setTimeInMillis(System.currentTimeMillis());
 				int mHour = calendar.get(Calendar.HOUR_OF_DAY);
 				int mMinute = calendar.get(Calendar.MINUTE);
-				new TimePickerDialog(DScheduleSetting.this,
+				new TimePickerDialog(ScheduleSetting.this,
 						new TimePickerDialog.OnTimeSetListener() {
 
 							@Override
@@ -244,7 +243,7 @@ public class DScheduleSetting extends Activity {
 				calendar.setTimeInMillis(System.currentTimeMillis());
 				int mHour = calendar.get(Calendar.HOUR_OF_DAY);
 				int mMinute = calendar.get(Calendar.MINUTE);
-				new TimePickerDialog(DScheduleSetting.this,
+				new TimePickerDialog(ScheduleSetting.this,
 						new TimePickerDialog.OnTimeSetListener() {
 
 							@Override
@@ -256,7 +255,7 @@ public class DScheduleSetting extends Activity {
 						}, mHour, mMinute, true).show();
 			}
 		});
-		new AlertDialog.Builder(DScheduleSetting.this).setView(view)
+		new AlertDialog.Builder(ScheduleSetting.this).setView(view)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 					@Override
@@ -276,7 +275,7 @@ public class DScheduleSetting extends Activity {
 	protected void setLessonName() {
 		final EditText et = new EditText(getApplicationContext());
 		et.setHint("输入课程名称");
-		new AlertDialog.Builder(DScheduleSetting.this).setView(et)
+		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 					@Override
@@ -325,12 +324,12 @@ public class DScheduleSetting extends Activity {
 		calendar.set(Calendar.MINUTE, tempMinute);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		Intent intent = new Intent(DScheduleSetting.this, DAlarmReceiver.class);
+		Intent intent = new Intent(ScheduleSetting.this, AlarmReceiver.class);
 		boolean isEnable = (enable == 1) ? true : false;
 		intent.putExtra("isEnable", isEnable);
 		intent.putExtra("ringName", ringName);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
-				DScheduleSetting.this, _id, intent, 0);
+				ScheduleSetting.this, _id, intent, 0);
 		am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 				pendingIntent);
 		saveDataToDb();
@@ -340,7 +339,7 @@ public class DScheduleSetting extends Activity {
 	 * 把数据保存到数据库
 	 */
 	private void saveDataToDb() {
-		SQLiteDatabase db = new OldfeelDBManager(this).openOldfeelDb();
+		SQLiteDatabase db = DBHelper.openOldfeelDb(this);
 		ContentValues values = new ContentValues();
 		values.put("enable", enable);
 		values.put("weekDay", weekDay);

@@ -1,6 +1,6 @@
 ﻿package org.dlion.schedule;
 
-public class DScheduleInfo {
+public class ScheduleInfo {
 	int _id;
 	int enable;
 	int weekDay;
@@ -11,7 +11,7 @@ public class DScheduleInfo {
 	String classRoom;
 	String teacherName;
 
-	public DScheduleInfo(int _id, int enable, int weekDay, String lessonTime,
+	public ScheduleInfo(int _id, int enable, int weekDay, String lessonTime,
 			String lessonName, String ringTime, String ringName,
 			String classRoom, String teacherName) {
 		super();

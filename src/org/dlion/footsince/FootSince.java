@@ -3,7 +3,8 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.dlion.oldfeel.OldfeelDBManager;
+import org.dlion.oldfeel.DBHelper;
+import org.dlion.oldfeel.FileBrowser;
 import org.dlion.oldfeel.R;
 
 import android.content.ContentValues;
@@ -16,8 +17,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -31,13 +32,11 @@ import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 
-public class DFootSince extends MapActivity {
-	protected static final String TABLE_NAME = "foot_since";
+public class FootSince extends MapActivity {
+	protected static final String TABLE_NAME = "footsince";
 	protected static final String path = Environment
 			.getExternalStorageDirectory().getAbsolutePath()
 			+ "/oldfeel/footsince";
-	private static final String TAG = "DFootSince";
-	OldfeelDBManager dDBManager;
 	SQLiteDatabase db;
 
 	MapView dMap;
@@ -70,7 +69,7 @@ public class DFootSince extends MapActivity {
 		}
 	};
 
-	ImageButton btnCamera, btnBrowseImg, btnBrowseVideo;
+	Button btnCamera, btnBrowseImg, btnBrowseVideo;
 	EditText etFootName;
 	/**
 	 * 是否选择足迹，true为已经选择，false为没有选择
@@ -84,9 +83,9 @@ public class DFootSince extends MapActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.d_footsince);
-		dDBManager = new OldfeelDBManager(this);
-		db = dDBManager.openOldfeelDb();
+		setTitle("足迹");
+		setContentView(R.layout.footsince);
+		db = DBHelper.openOldfeelDb(FootSince.this);
 
 		mLocationClient = new LocationClient(this); // 百度定位
 		mLocationClient.registerLocationListener(myListener);
@@ -112,19 +111,12 @@ public class DFootSince extends MapActivity {
 	}
 
 	/**
-	 * 显示Log
-	 */
-	protected void showLog(String log) {
-		Log.d("DFootSince", log);
-	}
-
-	/**
 	 * 初始化编辑框
 	 */
 	private void initEtView() {
-		btnCamera = (ImageButton) findViewById(R.id.d_footsince_btn_camera);
-		btnBrowseImg = (ImageButton) findViewById(R.id.d_footsince_btn_browseImg);
-		btnBrowseVideo = (ImageButton) findViewById(R.id.d_footsince_btn_browseVideo);
+		btnCamera = (Button) findViewById(R.id.d_footsince_btn_camera);
+		btnBrowseImg = (Button) findViewById(R.id.d_footsince_btn_browseImg);
+		btnBrowseVideo = (Button) findViewById(R.id.d_footsince_btn_browseVideo);
 		etFootName = (EditText) findViewById(R.id.d_footsince_et_footName);
 		btnCamera.setOnClickListener(btnListener);
 		btnBrowseImg.setOnClickListener(btnListener);
@@ -162,10 +154,10 @@ public class DFootSince extends MapActivity {
 				letCamera();
 				break;
 			case R.id.d_footsince_btn_browseImg:
-				browseFootFile("img");
+				browseFootFile();
 				break;
 			case R.id.d_footsince_btn_browseVideo:
-				browseFootFile("video");
+				startLocationListener();
 				break;
 			default:
 				break;
@@ -190,10 +182,9 @@ public class DFootSince extends MapActivity {
 		if (mLocationClient != null && mLocationClient.isStarted())
 			mLocationClient.requestLocation();
 		mLocationClient.requestPoi();
-		Log.d(TAG, "hold the etFootName");
 		Intent intent = new Intent();
 		intent.putExtra("footName", footName);
-		intent.setClass(DFootSince.this, DFootName.class);
+		intent.setClass(FootSince.this, FootName.class);
 		startActivityForResult(intent, 1);
 	}
 
@@ -202,13 +193,14 @@ public class DFootSince extends MapActivity {
 		switch (requestCode) {
 		case 1:
 			if (resultCode == 1) {
-				isSelectedFootSince = true;
 				footName = data.getStringExtra("footName");
+				isSelectedFootSince = true;
 				etFootName.setText(footName);
 				lat = data.getIntExtra("lat", lat);
 				lon = data.getIntExtra("lon", lon);
 				syncDataToDb(footName);
 				moveToGeoPoint(lat, lon);
+				stopLocationListener();
 			}
 			break;
 		default:
@@ -227,15 +219,15 @@ public class DFootSince extends MapActivity {
 	/**
 	 * 浏览
 	 */
-	private void browseFootFile(String type) {
+	private void browseFootFile() {
 		String footFilePath = "";
 		if (footName.length() < 1) {
 			footFilePath = path;
 		} else {
-			footFilePath = path + "/" + footName + "/" + type;
+			footFilePath = path + "/" + footName + "/";
 		}
 		Intent intent = new Intent();
-		intent.setClass(DFootSince.this, DFootFile.class);
+		intent.setClass(FootSince.this, FileBrowser.class);
 		intent.putExtra("path", footFilePath);
 		startActivity(intent);
 	}
@@ -246,7 +238,7 @@ public class DFootSince extends MapActivity {
 	protected void letCamera() {
 		if (isSelectedFootSince) {
 			Intent intent = new Intent();
-			intent.setClass(getApplicationContext(), DFootCamera.class);
+			intent.setClass(getApplicationContext(), FootCamera.class);
 			intent.putExtra("footName", footName);
 			startActivity(intent);
 		} else {
@@ -258,9 +250,9 @@ public class DFootSince extends MapActivity {
 	 * 同步数据到数据库
 	 */
 	protected void syncDataToDb(String footName) {
-		db = dDBManager.openOldfeelDb();
-		Cursor c = db.query("foot_since", null,
-				"footName = '" + footName + "'", null, null, null, null);
+		db = DBHelper.openOldfeelDb(this);
+		Cursor c = db.query("footsince", null, "footName = '" + footName + "'",
+				null, null, null, null);
 		if (c.moveToFirst()) {
 			Log.d("syncDataToDb", "footName 已经存在");
 		} else {
@@ -270,35 +262,28 @@ public class DFootSince extends MapActivity {
 			values.put("longitude", lon);
 			values.put("footName", footName);
 			values.put("date", getNowTime());
-			db.insert("foot_since", "_id", values);
+			db.insert("footsince", "_id", values);
 		}
 	}
 
-	@Override
-	protected void onResume() {
-		if (!db.isOpen()) {
-			db = dDBManager.openOldfeelDb();
-		}
+	/**
+	 * 开始定位监听
+	 */
+	private void startLocationListener() {
 		mBMapMan.getLocationManager().requestLocationUpdates(mLocationListener);
 		mLocationOverlay.enableMyLocation();
 		mBMapMan.start();
-		super.onResume();
+		mLocationClient.start();
 	}
 
-	@Override
-	protected void onPause() {
-		if (db.isOpen()) {
-			db.close();
-		}
+	/**
+	 * 停止定位监听
+	 */
+	private void stopLocationListener() {
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mLocationOverlay.disableMyLocation();
 		mBMapMan.stop();
-		super.onPause();
-	}
-
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
+		mLocationClient.stop();
 	}
 
 	/**
@@ -310,6 +295,29 @@ public class DFootSince extends MapActivity {
 		option.setCoorType("gcj02"); // 设置坐标类型
 		option.setScanSpan(5000); // 设置定位模式，小于1秒则一次定位;大于等于1秒则定时定位
 		mLocationClient.setLocOption(option);
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		return false;
+	}
+
+	@Override
+	protected void onResume() {
+		if (!db.isOpen() || db == null) {
+			db = DBHelper.openOldfeelDb(FootSince.this);
+		}
+		startLocationListener();
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		if (db.isOpen()) {
+			db.close();
+		}
+		stopLocationListener();
+		super.onPause();
 	}
 
 	public Toast toast;
@@ -325,5 +333,12 @@ public class DFootSince extends MapActivity {
 			toast.setText(arg);
 		}
 		toast.show();
+	}
+
+	/**
+	 * 显示Log
+	 */
+	protected void showLog(String log) {
+		Log.d("DFootSince", log);
 	}
 }

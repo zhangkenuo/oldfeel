@@ -4,12 +4,14 @@
     <item
         android:id="@+id/file_context_menu_rename"
         android:title="重命名"/>
+    <!--
     <item
         android:id="@+id/file_context_menu_copy"
         android:title="复制"/>
     <item
         android:id="@+id/file_context_menu_move"
         android:title="移动"/>
+    -->
     <item
         android:id="@+id/file_context_menu_delete"
         android:title="删除"/>

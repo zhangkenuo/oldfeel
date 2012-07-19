@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:text="添加课程"
+        android:text="添加日程"
         android:textSize="25dp" />
 
     <ListView

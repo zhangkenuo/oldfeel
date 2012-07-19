@@ -41,21 +41,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OldfeelFile" >
+        <activity android:name="org.dlion.footsince.FootSince" >
         </activity>
-        <activity android:name="org.dlion.footsince.DFootSince" >
-        </activity>
-        <activity android:name="org.dlion.footsince.DFootName" >
+        <activity android:name="org.dlion.footsince.FootName" >
         </activity>
         <activity android:name="org.dlion.footsince.DFootFile" >
         </activity>
         <activity
-            android:name="org.dlion.footsince.DFootCamera"
+            android:name="org.dlion.footsince.FootCamera"
             android:screenOrientation="landscape" >
         </activity>
-        <activity android:name="org.dlion.schedule.DScheduleSetting" >
+        <activity android:name="org.dlion.schedule.ScheduleSetting" >
         </activity>
-        <activity android:name="org.dlion.schedule.DSchedule" >
+        <activity android:name="org.dlion.schedule.Schedule" >
+        </activity>
+        <activity android:name=".FileBrowser" >
+        </activity>
+        <activity android:name=".FilePaste" >
+        </activity>
+        <activity android:name=".DeleteDB" >
         </activity>
 
         <service
@@ -68,8 +72,12 @@
                 </action>
             </intent-filter>
         </service>
+
+        <activity android:name="org.dlion.timer.Timer" >
+        </activity>
+
         <service
-            android:name="org.dlion.alarm.DAlarmService"
+            android:name="org.dlion.schedule.AlarmService"
             android:enabled="true" >
             <intent-filter>
                 <action android:name="org.dlion.dalarm.AlarmService" />
@@ -79,11 +87,11 @@
         </service>
 
         <receiver
-            android:name="orgorg.dlion.alarm.DAlarmReceiver"
+            android:name="org.dlion.schedule.AlarmReceiver"
             android:process=":remote" >
         </receiver>
         <receiver
-            android:name="org.dlorg.dlion.alarm.DAlarmBootReceiver"
+            android:name="org.dlion.schedule.AlarmBootReceiverver"
             android:process=":remote" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

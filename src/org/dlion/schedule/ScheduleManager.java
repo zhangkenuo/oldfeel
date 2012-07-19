@@ -2,8 +2,7 @@
 
 import java.util.Calendar;
 
-import org.dlion.alarm.DAlarmReceiver;
-import org.dlion.oldfeel.OldfeelDBManager;
+import org.dlion.oldfeel.DBHelper;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -12,16 +11,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class DScheduleManager {
+public class ScheduleManager {
 	Context context;
-	OldfeelDBManager dbMan;
 	SQLiteDatabase db;
 	private String TABLE_NAME = "schedule";
 
-	public DScheduleManager(Context context) {
+	public ScheduleManager(Context context) {
 		this.context = context;
-		dbMan = new OldfeelDBManager(context);
-		db = dbMan.openOldfeelDb();
+		db = DBHelper.openOldfeelDb(context);
 	}
 
 	/**
@@ -45,7 +42,7 @@ public class DScheduleManager {
 			calendar.set(Calendar.MINUTE, tempMinute);
 			calendar.set(Calendar.SECOND, 0);
 			calendar.set(Calendar.MILLISECOND, 0);
-			Intent intent = new Intent(context, DAlarmReceiver.class);
+			Intent intent = new Intent(context, AlarmReceiver.class);
 			boolean isEnable = (enable == 1) ? true : false;
 			if (isEnable) { // 判断是否启用，把启用的添加到闹钟管理里边。
 				intent.putExtra("isEnable", isEnable);
@@ -65,7 +62,7 @@ public class DScheduleManager {
 	 * 删除课程表
 	 */
 	public void scheduleCancel(AlarmManager am, boolean isEnable, int _id) {
-		Intent intent = new Intent(context, DAlarmReceiver.class);
+		Intent intent = new Intent(context, AlarmReceiver.class);
 		intent.putExtra("isEnable", isEnable);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, _id,
 				intent, 0);

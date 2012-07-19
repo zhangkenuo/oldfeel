@@ -15,7 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_margin="3dp"
+        android:background="@drawable/d_footsince_title_bg"
         android:orientation="horizontal" >
 
         <EditText
@@ -29,22 +29,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal" >
 
-            <ImageButton
+            <Button
                 android:id="@+id/d_footsince_btn_camera"
                 style="@style/btn_wrap"
-                android:src="@drawable/d_footsince_camera" />
+                android:background="@drawable/d_footsince_camera" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/d_footsince_btn_browseImg"
                 style="@style/btn_wrap"
-                android:src="@drawable/d_file_icon_img" />
+                android:background="@drawable/d_footsince_browser" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/d_footsince_btn_browseVideo"
                 style="@style/btn_wrap"
-                android:src="@drawable/d_file_icon_video" />
+                android:background="@drawable/d_footsince_location" />
         </LinearLayout>
     </LinearLayout>
 

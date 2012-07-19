@@ -1,4 +1,4 @@
-﻿package org.dlion.alarm;
+﻿package org.dlion.schedule;
 
 import android.app.Service;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.util.Log;
 
-public class DAlarmService extends Service {
+public class AlarmService extends Service {
 	private final String RING_DIR_PATH = android.os.Environment
 			.getExternalStorageDirectory().getAbsolutePath() + "/oldfeel/ring/";
 	private MediaPlayer player;

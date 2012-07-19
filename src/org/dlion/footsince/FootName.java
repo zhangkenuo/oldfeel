@@ -2,7 +2,9 @@
 
 import java.io.File;
 
-import org.dlion.oldfeel.OldfeelDBManager;
+import org.dlion.oldfeel.DBHelper;
+import org.dlion.oldfeel.FileBrowser;
+import org.dlion.oldfeel.FileUtil;
 import org.dlion.oldfeel.R;
 
 import android.app.Activity;
@@ -27,7 +29,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class DFootName extends Activity {
+public class FootName extends Activity {
 	private static final String TAG = "DFootSince";
 	protected static final String path = Environment
 			.getExternalStorageDirectory().getAbsolutePath()
@@ -36,7 +38,6 @@ public class DFootName extends Activity {
 	EditText etFootName;
 	Button btnSubmit;
 	SQLiteDatabase db;
-	OldfeelDBManager dbMan;
 	protected int lat;
 	protected int lon;
 	protected String footName;
@@ -47,9 +48,8 @@ public class DFootName extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.d_footsince_footname);
-		dbMan = new OldfeelDBManager(this);
-		db = dbMan.openOldfeelDb();
+		setContentView(R.layout.footsince_footname);
+		db = DBHelper.openOldfeelDb(this);
 		footNameListView = (ListView) findViewById(R.id.d_footsince_footname_listView);
 		etFootName = (EditText) findViewById(R.id.d_footsince_footname_et);
 		btnSubmit = (Button) findViewById(R.id.d_footsince_footname_btnSubmit);
@@ -58,8 +58,7 @@ public class DFootName extends Activity {
 		etFootName.setText(footName);
 
 		// 显示足迹到listview
-		footnameCursor = db.query("foot_since", null, null, null, null, null,
-				null);
+		footnameCursor = DBHelper.getAllCursor(db, "footsince");
 		startManagingCursor(footnameCursor);
 		footNameAdapter = new SimpleCursorAdapter(this,
 				android.R.layout.simple_list_item_2, footnameCursor,
@@ -83,7 +82,6 @@ public class DFootName extends Activity {
 		registerForContextMenu(footNameListView); // 注册listview的上下文菜单监听
 
 		// 选择足迹后返回
-		btnSubmit.setText("确定");
 		btnSubmit.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -107,6 +105,9 @@ public class DFootName extends Activity {
 		super.onCreateContextMenu(menu, v, menuInfo);
 	}
 
+	/**
+	 * 上下文菜单监听
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
@@ -144,7 +145,7 @@ public class DFootName extends Activity {
 	 */
 	private void footNameEdit() {
 		View view = getLayoutInflater().inflate(
-				R.layout.d_footsince_footname_edit, null);
+				R.layout.footsince_footname_edit, null);
 		new AlertDialog.Builder(this).setTitle("编辑").setView(view)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -165,16 +166,15 @@ public class DFootName extends Activity {
 						String footFilePath = path + "/" + footName;
 						File file = new File(footFilePath);
 						if (file.exists()) {
-							file.delete();
+							FileUtil.deleteFile(file);
 						}
 						showLog(String.valueOf(_id));
 						showLog(footName);
-						db.delete("foot_since", "_id = " + _id, null);
-						footnameCursor = db.query("foot_since", null, null,
-								null, null, null, null);
+						db.delete("footsince", "_id = " + _id, null);
+						footnameCursor = DBHelper.getAllCursor(db, "footsince");
 						startManagingCursor(footnameCursor);
 						footNameAdapter = new SimpleCursorAdapter(
-								DFootName.this,
+								FootName.this,
 								android.R.layout.simple_list_item_2,
 								footnameCursor, new String[] { "footName",
 										"date" },
@@ -186,16 +186,12 @@ public class DFootName extends Activity {
 	}
 
 	/**
-	 * 初始化足迹列表
-	 */
-
-	/**
 	 * 浏览
 	 */
 	private void browseFootFile(String type) {
 		String footFilePath = path + "/" + footName + "/" + type;
 		Intent intent = new Intent();
-		intent.setClass(this, DFootFile.class);
+		intent.setClass(this, FileBrowser.class);
 		intent.putExtra("path", footFilePath);
 		startActivity(intent);
 	}

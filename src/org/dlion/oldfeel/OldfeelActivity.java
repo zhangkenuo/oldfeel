@@ -1,7 +1,8 @@
 ﻿package org.dlion.oldfeel;
 
-import org.dlion.footsince.DFootSince;
-import org.dlion.schedule.DSchedule;
+import org.dlion.footsince.FootSince;
+import org.dlion.schedule.Schedule;
+import org.dlion.timer.Timer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,9 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class OldfeelActivity extends Activity {
-	String[] dTools = { "足迹", "日程" };
-	Class<?>[] dActivities = { DFootSince.class, DSchedule.class };
-	int[] dIcons = { R.drawable.d_icon_footsince, R.drawable.d_icon_schedule };
+	String[] dTools = { "足迹", "日程", "计时器", "删除数据库" };
+	Class<?>[] dActivities = { FootSince.class, Schedule.class, Timer.class,
+			DeleteDB.class };
+	int[] dIcons = { R.drawable.icon_footsince, R.drawable.icon_schedule,
+			R.drawable.icon_timer, R.drawable.icon_deletedb };
 
 	/** Called when the activity is first created. */
 	@Override

@@ -32,7 +32,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DFootCamera extends Activity {
+public class FootCamera extends Activity {
 	private static final String TAG = "OldfeelCamera";
 	private ImageButton mVideoStartBtn;
 	private SurfaceView mSurfaceview;
@@ -56,7 +56,7 @@ public class DFootCamera extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
-		setContentView(R.layout.d_footsince_camera);
+		setContentView(R.layout.footsince_camera);
 		timer = (TextView) findViewById(R.id.oldfeel_camera_timer);
 		mVideoStartBtn = (ImageButton) findViewById(R.id.oldfeel_camera_video);
 		mSurfaceview = (SurfaceView) this
@@ -253,21 +253,6 @@ public class DFootCamera extends Activity {
 	}
 
 	/**
-	 * 消息提示
-	 */
-	private Toast toast;
-
-	public void showMsg(String arg) {
-		if (toast == null) {
-			toast = Toast.makeText(this, arg, Toast.LENGTH_SHORT);
-		} else {
-			toast.cancel();
-			toast.setText(arg);
-		}
-		toast.show();
-	}
-
-	/**
 	 * 生成video文件名字
 	 */
 	protected File getVideoFile() {
@@ -314,6 +299,21 @@ public class DFootCamera extends Activity {
 			s = "0" + s;
 		}
 		return s;
+	}
+
+	/**
+	 * 消息提示
+	 */
+	private Toast toast;
+
+	public void showMsg(String arg) {
+		if (toast == null) {
+			toast = Toast.makeText(this, arg, Toast.LENGTH_SHORT);
+		} else {
+			toast.cancel();
+			toast.setText(arg);
+		}
+		toast.show();
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.dlion.oldfeel.OldfeelDBManager;
+import org.dlion.oldfeel.DBHelper;
 import org.dlion.oldfeel.R;
 
 import android.app.Activity;
@@ -34,9 +34,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class DSchedule extends Activity {
+public class Schedule extends Activity {
 	SQLiteDatabase db;
-	OldfeelDBManager dbMan;
 	Spinner eachWeek;
 	ListView scheduleList;
 	Calendar calendar;
@@ -69,8 +68,8 @@ public class DSchedule extends Activity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			Intent intent = new Intent();
-			intent.setClass(DSchedule.this, DScheduleSetting.class);
-			DScheduleInfo extraInfo = list.get(arg2);
+			intent.setClass(Schedule.this, ScheduleSetting.class);
+			ScheduleInfo extraInfo = list.get(arg2);
 			intent.putExtra("_id", extraInfo.get_id());
 			intent.putExtra("enable", extraInfo.getEnable());
 			intent.putExtra("weekDay", weekDay);
@@ -83,7 +82,7 @@ public class DSchedule extends Activity {
 			startActivity(intent);
 		}
 	};
-	private ArrayList<DScheduleInfo> list;
+	private ArrayList<ScheduleInfo> list;
 	private scheduleAdapter mScheduleAdapter;
 
 	/**
@@ -93,9 +92,9 @@ public class DSchedule extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			DScheduleInfo schedule = list.get(position);
+			ScheduleInfo schedule = list.get(position);
 			convertView = getLayoutInflater().inflate(
-					R.layout.schedule_info_list_item, null);
+					R.layout.schedule_main_list_item, null);
 			TextView tvLessonName = (TextView) convertView
 					.findViewById(R.id.schedule_lessonName);
 			TextView tvLessonTime = (TextView) convertView
@@ -130,9 +129,9 @@ public class DSchedule extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTitle("日程");
 		setContentView(R.layout.schedule_main);
-		dbMan = new OldfeelDBManager(this);
-		db = dbMan.openOldfeelDb();
+		db = DBHelper.openOldfeelDb(this);
 		String ringPath = DATABASE_PATH + "/ring/";
 		File ringDir = new File(ringPath);
 		if (!ringDir.exists()) {
@@ -148,9 +147,9 @@ public class DSchedule extends Activity {
 	 * 获取课程表信息
 	 */
 	protected void getScheduleInfo() {
-		list = new ArrayList<DScheduleInfo>();
+		list = new ArrayList<ScheduleInfo>();
 		try {
-			db = dbMan.openOldfeelDb();
+			db = DBHelper.openOldfeelDb(this);
 			Cursor c = db.rawQuery("select * from schedule where weekDay = ?",
 					new String[] { String.valueOf(weekDay) });
 			while (c.moveToNext()) {
@@ -163,9 +162,9 @@ public class DSchedule extends Activity {
 				String classRoom = c.getString(c.getColumnIndex("classRoom"));
 				String teacherName = c.getString(c
 						.getColumnIndex("teacherName"));
-				DScheduleInfo schedule = new DScheduleInfo(_id, enable,
-						weekDay, lessonTime, lessonName, ringTime, ringName,
-						classRoom, teacherName);
+				ScheduleInfo schedule = new ScheduleInfo(_id, enable, weekDay,
+						lessonTime, lessonName, ringTime, ringName, classRoom,
+						teacherName);
 				list.add(schedule);
 			}
 		} catch (Exception e) {
@@ -189,7 +188,7 @@ public class DSchedule extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Cursor c = DSchedule.this.db.rawQuery(
+				Cursor c = Schedule.this.db.rawQuery(
 						"select MAX(_id) from schedule", null);
 				int _id = 0;
 				if (c.moveToNext()) {
@@ -200,7 +199,7 @@ public class DSchedule extends Activity {
 					db.insert("schedule", "_id", values);
 				}
 				Intent intent = new Intent();
-				intent.setClass(DSchedule.this, DScheduleSetting.class);
+				intent.setClass(Schedule.this, ScheduleSetting.class);
 				intent.putExtra("_id", _id);
 				intent.putExtra("weekDay", weekDay);
 				startActivity(intent);
@@ -267,7 +266,7 @@ public class DSchedule extends Activity {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		DScheduleInfo tempSchedule = list.get(info.position); // 当前操作的课程表
+		ScheduleInfo tempSchedule = list.get(info.position); // 当前操作的课程表
 		switch (item.getItemId()) {
 		case R.id.schedule_context_menu_enable:
 			tempSchedule.setEnable(1);
@@ -281,7 +280,7 @@ public class DSchedule extends Activity {
 			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 			am = (AlarmManager) getSystemService(ALARM_SERVICE);
 			boolean isEnable = (tempSchedule.getEnable() == 1) ? true : false;
-			new DScheduleManager(DSchedule.this).scheduleCancel(am, isEnable,
+			new ScheduleManager(Schedule.this).scheduleCancel(am, isEnable,
 					tempSchedule.get_id());
 			list.remove(info.position);
 			mScheduleAdapter.notifyDataSetChanged();
@@ -294,8 +293,8 @@ public class DSchedule extends Activity {
 
 	@Override
 	protected void onResume() {
-		if (!db.isOpen()) {
-			dbMan.openOldfeelDb();
+		if (!db.isOpen() || db == null) {
+			db = DBHelper.openOldfeelDb(this);
 		}
 		getScheduleInfo();
 		mScheduleAdapter.notifyDataSetChanged();

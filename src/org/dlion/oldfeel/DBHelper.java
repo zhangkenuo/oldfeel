@@ -5,20 +5,16 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
-public class OldfeelDBManager {
-	Context context;
-
-	public OldfeelDBManager(Context context) {
-		this.context = context;
-	}
+public class DBHelper {
 
 	/**
 	 * 打开数据库
 	 */
-	public SQLiteDatabase openOldfeelDb() {
+	public static SQLiteDatabase openOldfeelDb(Context context) {
 		String path = Environment.getExternalStorageDirectory()
 				.getAbsolutePath() + "/oldfeel/database";
 		File dir = new File(path);
@@ -46,5 +42,13 @@ public class OldfeelDBManager {
 		SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbFilePath,
 				null);
 		return db;
+	}
+
+	/**
+	 * 获取表中所有数据的cursor
+	 */
+	public static Cursor getAllCursor(SQLiteDatabase db, String tableName) {
+		Cursor c = db.query(tableName, null, null, null, null, null, null);
+		return c;
 	}
 }
