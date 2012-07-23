@@ -9,18 +9,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d("receiver", "receiver is start");
+		showLog("AlarmReceiver onReceive");
 		Intent serviceIntent = new Intent("org.dlion.dalarm.AlarmService");
-		boolean isEnable = intent.getBooleanExtra("isEnable", false);
-		String ringName = intent.getStringExtra("ringName");
-		serviceIntent.putExtra("isEnable", isEnable);
-		serviceIntent.putExtra("ringName", ringName);
-		if (isEnable) {
-			Log.i("Receiver", "true");
-			context.startService(serviceIntent);
-		} else {
-			Log.i("Receiver", "false");
-			context.stopService(serviceIntent);
-		}
+		context.startService(serviceIntent);
+	}
+
+	private void showLog(String log) {
+		Log.d("AlarmReceiver", log);
 	}
 }

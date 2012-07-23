@@ -53,7 +53,7 @@ public class FootSince extends MapActivity {
 			showLog(String.valueOf(nowTime));
 			if (location.getLocType() == BDLocation.TypeNetWorkLocation) {
 				footName = location.getAddrStr().toString();
-				etFootName.setText(footName);
+				refurbishView();
 			}
 		}
 
@@ -64,12 +64,12 @@ public class FootSince extends MapActivity {
 			nowTime = poiLocation.getTime().toString();
 			if (poiLocation.getLocType() == BDLocation.TypeNetWorkLocation) {
 				footName = poiLocation.getAddrStr().toString();
-				etFootName.setText(footName);
+				refurbishView();
 			}
 		}
 	};
 
-	Button btnCamera, btnBrowseImg, btnBrowseVideo;
+	Button btnCamera, btnBrowseImg, btnLocation;
 	EditText etFootName;
 	/**
 	 * 是否选择足迹，true为已经选择，false为没有选择
@@ -85,7 +85,7 @@ public class FootSince extends MapActivity {
 		super.onCreate(savedInstanceState);
 		setTitle("足迹");
 		setContentView(R.layout.footsince);
-		db = DBHelper.openOldfeelDb(FootSince.this);
+		db = DBHelper.openDb(FootSince.this);
 
 		mLocationClient = new LocationClient(this); // 百度定位
 		mLocationClient.registerLocationListener(myListener);
@@ -111,16 +111,29 @@ public class FootSince extends MapActivity {
 	}
 
 	/**
+	 * 刷新footName
+	 */
+	protected void refurbishView() {
+		if (isSelectedFootSince) {
+			etFootName.setText(selectedFootName);
+			btnCamera.setBackgroundResource(R.drawable.d_footsince_camera_1);
+		} else {
+			etFootName.setText(footName);
+			btnCamera.setBackgroundResource(R.drawable.d_footsince_camera_2);
+		}
+	}
+
+	/**
 	 * 初始化编辑框
 	 */
 	private void initEtView() {
 		btnCamera = (Button) findViewById(R.id.d_footsince_btn_camera);
 		btnBrowseImg = (Button) findViewById(R.id.d_footsince_btn_browseImg);
-		btnBrowseVideo = (Button) findViewById(R.id.d_footsince_btn_browseVideo);
+		btnLocation = (Button) findViewById(R.id.d_footsince_btn_browseVideo);
 		etFootName = (EditText) findViewById(R.id.d_footsince_et_footName);
 		btnCamera.setOnClickListener(btnListener);
 		btnBrowseImg.setOnClickListener(btnListener);
-		btnBrowseVideo.setOnClickListener(btnListener);
+		btnLocation.setOnClickListener(btnListener);
 		etFootName.setOnClickListener(btnListener);
 		etFootName.setFocusable(false);
 	}
@@ -157,6 +170,7 @@ public class FootSince extends MapActivity {
 				browseFootFile();
 				break;
 			case R.id.d_footsince_btn_browseVideo:
+				isSelectedFootSince = false;
 				startLocationListener();
 				break;
 			default:
@@ -164,6 +178,7 @@ public class FootSince extends MapActivity {
 			}
 		}
 	};
+	private String selectedFootName;
 
 	/**
 	 * 获取当前日期
@@ -190,16 +205,17 @@ public class FootSince extends MapActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		showLog("onActivityResult");
 		switch (requestCode) {
 		case 1:
 			if (resultCode == 1) {
-				footName = data.getStringExtra("footName");
 				isSelectedFootSince = true;
-				etFootName.setText(footName);
+				selectedFootName = data.getStringExtra("footName");
+				etFootName.setText(selectedFootName);
 				lat = data.getIntExtra("lat", lat);
 				lon = data.getIntExtra("lon", lon);
-				syncDataToDb(footName);
 				moveToGeoPoint(lat, lon);
+				syncDataToDb(footName);
 				stopLocationListener();
 			}
 			break;
@@ -212,6 +228,7 @@ public class FootSince extends MapActivity {
 	 * 移动到指定坐标点
 	 */
 	void moveToGeoPoint(int lat, int lon) {
+		showLog("moveToGeoPoint");
 		GeoPoint pt = new GeoPoint(lat, lon);
 		dMap.getController().animateTo(pt);
 	}
@@ -250,7 +267,7 @@ public class FootSince extends MapActivity {
 	 * 同步数据到数据库
 	 */
 	protected void syncDataToDb(String footName) {
-		db = DBHelper.openOldfeelDb(this);
+		db = DBHelper.openDb(this);
 		Cursor c = db.query("footsince", null, "footName = '" + footName + "'",
 				null, null, null, null);
 		if (c.moveToFirst()) {
@@ -304,8 +321,9 @@ public class FootSince extends MapActivity {
 
 	@Override
 	protected void onResume() {
+		showLog("onResume");
 		if (!db.isOpen() || db == null) {
-			db = DBHelper.openOldfeelDb(FootSince.this);
+			db = DBHelper.openDb(FootSince.this);
 		}
 		startLocationListener();
 		super.onResume();

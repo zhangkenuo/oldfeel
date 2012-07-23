@@ -1,5 +1,7 @@
 ﻿package org.dlion.oldfeel;
 
+import java.io.File;
+
 import org.dlion.footsince.FootSince;
 import org.dlion.schedule.Schedule;
 import org.dlion.timer.Timer;
@@ -8,6 +10,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +25,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class OldfeelActivity extends Activity {
-	String[] dTools = { "足迹", "日程", "计时器", "删除数据库" };
-	Class<?>[] dActivities = { FootSince.class, Schedule.class, Timer.class,
-			DeleteDB.class };
-	int[] dIcons = { R.drawable.icon_footsince, R.drawable.icon_schedule,
-			R.drawable.icon_timer, R.drawable.icon_deletedb };
+	String[] dTools = { "清除数据", "足迹", "日程", "秒表" };
+	Class<?>[] dActivities = { null, FootSince.class, Schedule.class,
+			Timer.class };
+	int[] dIcons = { R.drawable.icon_deletedb, R.drawable.icon_footsince,
+			R.drawable.icon_schedule, R.drawable.icon_timer };
 
 	/** Called when the activity is first created. */
 	@Override
@@ -77,7 +81,17 @@ public class OldfeelActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			startActivity(new Intent(getApplicationContext(), dActivities[arg2]));
+			if (arg2 == 0) {
+				String dbPath = Environment.getExternalStorageDirectory()
+						.getAbsolutePath().toString()
+						+ "/oldfeel/database/oldfeel.db";
+				File dbFile = new File(dbPath);
+				if (dbFile.delete()) {
+					Log.d("DeleteDB", "delete db file success");
+				}
+			} else
+				startActivity(new Intent(getApplicationContext(),
+						dActivities[arg2]));
 		}
 	};
 }

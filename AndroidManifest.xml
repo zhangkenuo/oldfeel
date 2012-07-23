@@ -55,11 +55,15 @@
         </activity>
         <activity android:name="org.dlion.schedule.Schedule" >
         </activity>
+        <activity
+            android:name="org.dlion.schedule.AlarmRing"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
         <activity android:name=".FileBrowser" >
         </activity>
         <activity android:name=".FilePaste" >
         </activity>
-        <activity android:name=".DeleteDB" >
+        <activity android:name="org.dlion.timer.Timer" >
         </activity>
 
         <service
@@ -72,10 +76,6 @@
                 </action>
             </intent-filter>
         </service>
-
-        <activity android:name="org.dlion.timer.Timer" >
-        </activity>
-
         <service
             android:name="org.dlion.schedule.AlarmService"
             android:enabled="true" >

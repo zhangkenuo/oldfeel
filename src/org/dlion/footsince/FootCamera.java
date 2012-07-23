@@ -28,13 +28,14 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class FootCamera extends Activity {
 	private static final String TAG = "OldfeelCamera";
-	private ImageButton mVideoStartBtn;
+	private ImageView btnVideoStart;
+	private ImageView btnImgStart;
 	private SurfaceView mSurfaceview;
 	private MediaRecorder mMediaRecorder;
 	private SurfaceHolder mSurfaceHolder;
@@ -58,7 +59,7 @@ public class FootCamera extends Activity {
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(R.layout.footsince_camera);
 		timer = (TextView) findViewById(R.id.oldfeel_camera_timer);
-		mVideoStartBtn = (ImageButton) findViewById(R.id.oldfeel_camera_video);
+		btnVideoStart = (ImageView) findViewById(R.id.oldfeel_camera_video);
 		mSurfaceview = (SurfaceView) this
 				.findViewById(R.id.oldfeel_camera_surfaceView);
 
@@ -107,7 +108,7 @@ public class FootCamera extends Activity {
 		});
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-		mVideoStartBtn.setOnClickListener(new Button.OnClickListener() {
+		btnVideoStart.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -121,7 +122,7 @@ public class FootCamera extends Activity {
 				}
 			}
 		});
-		ImageButton btnImgStart = (ImageButton) findViewById(R.id.oldfeel_camera_img);
+		btnImgStart = (ImageView) findViewById(R.id.oldfeel_camera_img);
 		btnImgStart.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -172,7 +173,7 @@ public class FootCamera extends Activity {
 			e.printStackTrace();
 		}
 		showMsg("开始录制");
-		mVideoStartBtn
+		btnVideoStart
 				.setImageResource(R.drawable.d_footsince_camera_video_stop);
 		isRecording = !isRecording;
 	}
@@ -191,7 +192,7 @@ public class FootCamera extends Activity {
 		timer.setText(format(hour) + ":" + format(minute) + ":"
 				+ format(second));
 		isRecording = !isRecording;
-		mVideoStartBtn
+		btnVideoStart
 				.setImageResource(R.drawable.d_footsince_camera_video_start);
 	}
 

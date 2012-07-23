@@ -28,23 +28,26 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:paddingTop="10dp" >
 
             <Button
                 android:id="@+id/d_footsince_btn_camera"
                 style="@style/btn_wrap"
-                android:background="@drawable/d_footsince_camera" />
+                android:layout_margin="2dp"
+                android:background="@drawable/d_footsince_camera_2" />
 
             <Button
                 android:id="@+id/d_footsince_btn_browseImg"
                 style="@style/btn_wrap"
+                android:layout_margin="2dp"
                 android:background="@drawable/d_footsince_browser" />
 
             <Button
                 android:id="@+id/d_footsince_btn_browseVideo"
                 style="@style/btn_wrap"
+                android:layout_margin="2dp"
                 android:background="@drawable/d_footsince_location" />
         </LinearLayout>
     </LinearLayout>

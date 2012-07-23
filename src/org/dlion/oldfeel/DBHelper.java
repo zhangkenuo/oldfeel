@@ -14,7 +14,7 @@ public class DBHelper {
 	/**
 	 * 打开数据库
 	 */
-	public static SQLiteDatabase openOldfeelDb(Context context) {
+	public static SQLiteDatabase openDb(Context context) {
 		String path = Environment.getExternalStorageDirectory()
 				.getAbsolutePath() + "/oldfeel/database";
 		File dir = new File(path);

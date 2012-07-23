@@ -26,33 +26,33 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class ScheduleSetting extends Activity {
+	private ImageView btnEnable;
 	int _id;
 	int enable;
 	int weekDay;
 	String ringTime;
-	String lessonName;
-	String lessonTime;
-	String teacherName;
-	String classRoom;
+	String scheduleName;
+	String scheduleTime;
+	String scheduleContent;
+	String scheduleRemark;
 	String ringName;
-	public String[] infoNames = new String[] { "响铃时间", "课程名称", "课程时间", "课程教师",
-			"教室名称", "选择铃声" };
+	public String[] infoNames = new String[] { "提醒时间", "名称", "持续时间", "内容",
+			"备注", "铃声" };
 	/**
-	 * 设置信息的值{0:响铃时间，1：课程名称，2：课程时间，3：课程教师，4：教室名称，5：选择铃声}
+	 * 设置信息的值{0:提醒时间，1：名称，2：持续时间，3：内容，4：备注，5：选择铃声}
 	 */
-	public String[] infoValues = new String[] { "19:00", "自由之翼", "19:00-01:00",
-			"吉姆`雷诺", "星际争霸", "ooo.mp3" };
+	public String[] infoValues = new String[] { "08:30", "android",
+			"8:30-11:30", "hello world", "study", "ooo.mp3" };
 	/**
 	 * 铃声列表
 	 */
 	public String[] ringNames = new String[] { "ooo.mp3" };
-	private ImageButton btnEnable;
 	/**
 	 * 按钮点击监听
 	 */
@@ -118,12 +118,15 @@ public class ScheduleSetting extends Activity {
 	private Calendar calendar;
 	protected AlarmManager am;
 	private infoAdapter mInfoAdapter;
+	private SQLiteDatabase db;
+	private ScheduleInfo scheduleInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTitle("设置");
 		setContentView(R.layout.schedule_setting);
+		db = DBHelper.openDb(this);
+		setTitle("设置");
 		calendar = Calendar.getInstance();
 		am = (AlarmManager) getSystemService(ALARM_SERVICE);
 		initScheduleInfo();
@@ -135,9 +138,7 @@ public class ScheduleSetting extends Activity {
 	 * 删除课程表
 	 */
 	protected void scheduleDelete() {
-		boolean isEnable = (enable == 1) ? true : false;
-		new ScheduleManager(ScheduleSetting.this).scheduleCancel(am, isEnable,
-				_id); // 删除课程表
+		new ScheduleUtil(ScheduleSetting.this, db).scheduleDel(scheduleInfo); // 删除课程表
 		finish();
 	}
 
@@ -172,7 +173,7 @@ public class ScheduleSetting extends Activity {
 	 */
 	protected void setClassRoom() {
 		final EditText et = new EditText(getApplicationContext());
-		et.setHint("输入教室名称");
+		et.setHint("名称");
 		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -189,7 +190,7 @@ public class ScheduleSetting extends Activity {
 	 */
 	protected void setTeacherName() {
 		final EditText et = new EditText(getApplicationContext());
-		et.setHint("输入课程教师名称");
+		et.setHint("内容");
 		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -274,7 +275,7 @@ public class ScheduleSetting extends Activity {
 	 */
 	protected void setLessonName() {
 		final EditText et = new EditText(getApplicationContext());
-		et.setHint("输入课程名称");
+		et.setHint("备注");
 		new AlertDialog.Builder(ScheduleSetting.this).setView(et)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -317,7 +318,6 @@ public class ScheduleSetting extends Activity {
 	protected void settingSave() {
 		String[] temp = infoValues[0].split(":");
 		int tempHour = Integer.valueOf(temp[0]);
-		Log.d("小时", String.valueOf(tempHour));
 		int tempMinute = Integer.valueOf(temp[1]);
 		calendar.set(Calendar.DAY_OF_WEEK, weekDay);
 		calendar.set(Calendar.HOUR_OF_DAY, tempHour);
@@ -339,7 +339,6 @@ public class ScheduleSetting extends Activity {
 	 * 把数据保存到数据库
 	 */
 	private void saveDataToDb() {
-		SQLiteDatabase db = DBHelper.openOldfeelDb(this);
 		ContentValues values = new ContentValues();
 		values.put("enable", enable);
 		values.put("weekDay", weekDay);
@@ -350,8 +349,6 @@ public class ScheduleSetting extends Activity {
 		values.put("classRoom", infoValues[4]);
 		values.put("ringName", infoValues[5]);
 		db.update("schedule", values, "_id = " + _id, null);
-		Log.d("设置", "db is update:响铃时间为" + infoValues[0]);
-		db.close();
 		finish(); // 退出设置
 	}
 
@@ -370,7 +367,7 @@ public class ScheduleSetting extends Activity {
 	 * 初始化设置里的按钮：开关、保存、清空
 	 */
 	private void initSettingBtn() {
-		btnEnable = (ImageButton) findViewById(R.id.schedule_setting_isAlarmEnable);
+		btnEnable = (ImageView) findViewById(R.id.schedule_setting_isAlarmEnable);
 		isAlarmEnable();
 		Button btnSave = (Button) findViewById(R.id.schedule_setting_save);
 		Button btnClear = (Button) findViewById(R.id.schedule_setting_resume);
@@ -389,11 +386,14 @@ public class ScheduleSetting extends Activity {
 		enable = getIntent().getIntExtra("enable", 0);
 		weekDay = getIntent().getIntExtra("weekDay", 0);
 		ringTime = getIntent().getStringExtra("ringTime");
-		lessonName = getIntent().getStringExtra("lessonName");
-		lessonTime = getIntent().getStringExtra("lessonTime");
-		classRoom = getIntent().getStringExtra("classRoom");
-		teacherName = getIntent().getStringExtra("teacherName");
+		scheduleName = getIntent().getStringExtra("lessonName");
+		scheduleTime = getIntent().getStringExtra("lessonTime");
+		scheduleRemark = getIntent().getStringExtra("classRoom");
+		scheduleContent = getIntent().getStringExtra("teacherName");
 		ringName = getIntent().getStringExtra("ringName");
+		scheduleInfo = new ScheduleInfo(_id, enable, weekDay, scheduleTime,
+				scheduleName, ringTime, ringName, scheduleRemark,
+				scheduleContent);
 	}
 
 	/**
@@ -401,10 +401,10 @@ public class ScheduleSetting extends Activity {
 	 */
 	private void initSettingInfo() {
 		infoValues[0] = setSettingInfo(infoValues[0], ringTime);
-		infoValues[1] = setSettingInfo(infoValues[1], lessonName);
-		infoValues[2] = setSettingInfo(infoValues[2], lessonTime);
-		infoValues[3] = setSettingInfo(infoValues[3], classRoom);
-		infoValues[4] = setSettingInfo(infoValues[4], teacherName);
+		infoValues[1] = setSettingInfo(infoValues[1], scheduleName);
+		infoValues[2] = setSettingInfo(infoValues[2], scheduleTime);
+		infoValues[3] = setSettingInfo(infoValues[3], scheduleRemark);
+		infoValues[4] = setSettingInfo(infoValues[4], scheduleContent);
 		infoValues[5] = setSettingInfo(infoValues[5], ringName);
 		ListView infoList = (ListView) findViewById(R.id.schedule_setting_infoList);
 		mInfoAdapter = new infoAdapter();
@@ -468,5 +468,19 @@ public class ScheduleSetting extends Activity {
 			temp = "0" + temp;
 		}
 		return temp;
+	}
+
+	@Override
+	protected void onResume() {
+		if (db == null || !db.isOpen()) {
+			db = DBHelper.openDb(this);
+		}
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		db.close();
+		super.onPause();
 	}
 }

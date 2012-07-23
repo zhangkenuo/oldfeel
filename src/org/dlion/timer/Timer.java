@@ -1,5 +1,6 @@
 ﻿package org.dlion.timer;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.dlion.oldfeel.DBHelper;
@@ -12,7 +13,9 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +44,12 @@ public class Timer extends Activity {
 	private ArrayList<String> names;
 	private ArrayList<TimerInfo> timers;
 	private ArrayAdapter<String> adapter;
+	String ringPath = Environment.getExternalStorageDirectory()
+			.getAbsolutePath().toString()
+			+ "/oldfeel/database/ring/";
+	private File[] ringsFile;
+	protected String ring;
+	private String timerName;
 	private final static int STOP_TIMER_BECAUSE_ADD = 1;
 	private final static int STOP_TIMER_BECAUSE_CONTEXTMENU = 2;
 	private final static int STOP_TIMER_BECAUSE_START = 3;
@@ -49,7 +59,7 @@ public class Timer extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timer);
 		setTitle("计时器");
-		db = DBHelper.openOldfeelDb(this);
+		db = DBHelper.openDb(this);
 		timerGridView = (GridView) findViewById(R.id.d_timer_gridView);
 		timerTextView = (TextView) findViewById(R.id.d_timer_textView);
 		timerBtnAdd = (Button) findViewById(R.id.d_timer_btnAdd);
@@ -62,17 +72,17 @@ public class Timer extends Activity {
 	 */
 	private void initTimerView() {
 		initTimerData();
-		adapter = new ArrayAdapter<String>(Timer.this,
-				android.R.layout.simple_list_item_1, android.R.id.text1, names);
+		adapter = new ArrayAdapter<String>(Timer.this, R.layout.timer_item,
+				R.id.timer_item_content, names);
 		timerGridView.setAdapter(adapter);
 		timerGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				if (!bool)
-					startTimer(timers.get(arg2).time);
+					startTimer(timers.get(arg2));
 				else
-					stopTimer(STOP_TIMER_BECAUSE_START, timers.get(arg2).time);
+					stopTimer(STOP_TIMER_BECAUSE_START, timers.get(arg2));
 			}
 		});
 		timerGridView.setOnCreateContextMenuListener(this);
@@ -83,14 +93,17 @@ public class Timer extends Activity {
 				if (!bool)
 					addTimer();
 				else
-					stopTimer(STOP_TIMER_BECAUSE_ADD, 0);
+					stopTimer(STOP_TIMER_BECAUSE_ADD, null);
 			}
 		});
 		timerBtnStop.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				stopTimer(0, 0);
+				if (bool)
+					stopTimer(0, null);
+				else
+					stopMusic();
 			}
 		});
 	}
@@ -143,7 +156,7 @@ public class Timer extends Activity {
 			getMenuInflater().inflate(R.menu.timer_context_menu, menu);
 			super.onCreateContextMenu(menu, v, menuInfo);
 		} else {
-			stopTimer(STOP_TIMER_BECAUSE_CONTEXTMENU, 0);
+			stopTimer(STOP_TIMER_BECAUSE_CONTEXTMENU, null);
 		}
 	}
 
@@ -184,14 +197,38 @@ public class Timer extends Activity {
 	 * 编辑计时器
 	 */
 	private void timerEdit(final TimerInfo timerInfo) {
+		File ringsDir = new File(ringPath);
+		ArrayList<String> ringsName = new ArrayList<String>();
+		ringsFile = ringsDir.listFiles();
+		for (int i = 0; i < ringsFile.length; i++) {
+			ringsName.add(ringsFile[i].getName());
+		}
 		View view = getLayoutInflater().inflate(R.layout.timer_edit, null);
 		final EditText etTime = (EditText) view
 				.findViewById(R.id.timer_edit_time);
 		final EditText etName = (EditText) view
 				.findViewById(R.id.timer_edit_name);
 		Spinner spRing = (Spinner) view.findViewById(R.id.timer_edit_ring);
+		int index = ringsName.indexOf(timerInfo.ring);
+		spRing.setSelection(index);
 		etTime.setText("" + timerInfo.time);
 		etName.setText(timerInfo.name);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, ringsName);
+		adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spRing.setAdapter(adapter);
+		spRing.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				ring = ringsFile[arg2].getAbsolutePath();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 		new AlertDialog.Builder(this).setTitle("编辑").setView(view)
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 					@Override
@@ -202,6 +239,7 @@ public class Timer extends Activity {
 								Integer.valueOf(etTime.getText().toString()
 										.trim()));
 						values.put("name", etName.getText().toString().trim());
+						values.put("ring", ring);
 						db.update("timer", values, "_id = " + timerInfo._id,
 								null);
 						initTimerView();
@@ -212,9 +250,11 @@ public class Timer extends Activity {
 	/**
 	 * 开始计时
 	 */
-	protected void startTimer(int time) {
+	protected void startTimer(TimerInfo timerInfo) {
 		bool = true;
-		second = time * 60;
+		second = timerInfo.time * 60;
+		ring = timerInfo.ring;
+		timerName = timerInfo.name;
 		showLog("startTimer");
 		handler.removeCallbacks(task);
 		handler.postDelayed(task, 1000);
@@ -223,14 +263,14 @@ public class Timer extends Activity {
 	/**
 	 * 停止计时
 	 */
-	protected void stopTimer(final int index, final int time) {
+	protected void stopTimer(final int index, final TimerInfo timerInfo) {
 		new AlertDialog.Builder(this).setTitle("正在计时,确定要关闭吗?")
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						bool = !bool;
 						handler.removeCallbacks(task);
-						timerTextView.setText("00:00:00");
+						timerTextView.setText("00:00");
 						switch (index) {
 						case STOP_TIMER_BECAUSE_ADD:
 							addTimer();
@@ -238,7 +278,7 @@ public class Timer extends Activity {
 						case STOP_TIMER_BECAUSE_CONTEXTMENU:
 							break;
 						case STOP_TIMER_BECAUSE_START:
-							startTimer(time);
+							startTimer(timerInfo);
 							break;
 						default:
 							break;
@@ -247,7 +287,6 @@ public class Timer extends Activity {
 				}).setNegativeButton("取消", null).show();
 	}
 
-	private int hour = 0;
 	private int minute = 0;
 	private int second = 0;
 	private boolean bool;
@@ -261,25 +300,40 @@ public class Timer extends Activity {
 				handler.postDelayed(this, 1000);
 				showLog(String.valueOf(second));
 				int tempSecond = second % 60;
-				minute = second / 60 % 60;
-				hour = second / 3600;
-				timerTextView.setText(format(hour) + ":" + format(minute) + ":"
+				minute = second / 60;
+				timerTextView.setText(timerName + ": " + format(minute) + ":"
 						+ format(tempSecond));
 				second--;
 				if (second < 0) {
 					bool = !bool;
 					handler.removeCallbacks(task);
-					playMusic();
+					playMusic(ring);
 				}
 			}
 		}
 	};
+	private MediaPlayer mPlayer;
 
 	/**
 	 * 播放音乐
 	 */
-	protected void playMusic() {
-		showLog("play music");
+	protected void playMusic(String ring) {
+		if (mPlayer == null) {
+			mPlayer = MediaPlayer.create(this, R.raw.ooo);
+			mPlayer.setLooping(false);
+			mPlayer.start();
+		}
+	}
+
+	/**
+	 * 停止音乐
+	 */
+	protected void stopMusic() {
+		if (mPlayer != null) {
+			mPlayer.stop();
+			mPlayer.release();
+			mPlayer = null;
+		}
 	}
 
 	/**
@@ -306,7 +360,7 @@ public class Timer extends Activity {
 	@Override
 	protected void onResume() {
 		if (!db.isOpen() || db == null) {
-			db = DBHelper.openOldfeelDb(this);
+			db = DBHelper.openDb(this);
 		}
 		super.onResume();
 	}

@@ -49,7 +49,7 @@ public class FootName extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.footsince_footname);
-		db = DBHelper.openOldfeelDb(this);
+		db = DBHelper.openDb(this);
 		footNameListView = (ListView) findViewById(R.id.d_footsince_footname_listView);
 		etFootName = (EditText) findViewById(R.id.d_footsince_footname_et);
 		btnSubmit = (Button) findViewById(R.id.d_footsince_footname_btnSubmit);
