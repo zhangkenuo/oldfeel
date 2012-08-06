@@ -1,4 +1,4 @@
-﻿package org.dlion.oldfeel;
+﻿package org.dlion.footsince;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -146,8 +146,7 @@ public class FileBrowser extends Activity {
 		}
 		final EditText view = new EditText(FileBrowser.this);
 		view.setText(file.getName());
-		new AlertDialog.Builder(FileBrowser.this).setView(view)
-				.setTitle("重命名")
+		new AlertDialog.Builder(FileBrowser.this).setView(view).setTitle("重命名")
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -263,8 +262,7 @@ public class FileBrowser extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = getLayoutInflater().inflate(R.layout.file_item,
-					null);
+			convertView = getLayoutInflater().inflate(R.layout.file_item, null);
 			ImageView ivIcon = (ImageView) convertView
 					.findViewById(R.id.d_file_item_icon);
 			TextView tvName = (TextView) convertView

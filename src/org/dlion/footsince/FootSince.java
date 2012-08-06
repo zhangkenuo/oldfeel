@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.dlion.oldfeel.DBHelper;
-import org.dlion.oldfeel.FileBrowser;
 import org.dlion.oldfeel.R;
 
 import android.content.ContentValues;
@@ -253,14 +252,13 @@ public class FootSince extends MapActivity {
 	 * 开始拍照/录像
 	 */
 	protected void letCamera() {
-		if (isSelectedFootSince) {
-			Intent intent = new Intent();
-			intent.setClass(getApplicationContext(), FootCamera.class);
-			intent.putExtra("footName", footName);
-			startActivity(intent);
-		} else {
-			showMsg("你还没有命名足迹，请命名后继续!");
+		if (footName.length() < 1) {
+			footName = "test";
 		}
+		Intent intent = new Intent();
+		intent.setClass(getApplicationContext(), FootCamera.class);
+		intent.putExtra("footName", footName);
+		startActivity(intent);
 	}
 
 	/**

@@ -19,7 +19,7 @@ public class DBHelper {
 				.getAbsolutePath() + "/oldfeel/database";
 		File dir = new File(path);
 		if (!dir.exists()) {
-			dir.mkdir();
+			dir.mkdirs();
 		}
 		String dbFilePath = path + "/oldfeel.db";
 		File dbFile = new File(dbFilePath);

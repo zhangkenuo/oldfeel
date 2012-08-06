@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/reading_option_menu_fontsize"
+        android:title="字体大小"/>
+    <item
+        android:id="@+id/reading_option_menu_textcolor"
+        android:title="文本颜色"/>
+    <item
+        android:id="@+id/reading_option_menu_style"
+        android:title="背景风格"/>
+    <item
+        android:id="@+id/reading_option_menu_catalog"
+        android:title="目录"/>
+    <item
+        android:id="@+id/reading_option_menu_progress"
+        android:title="进度跳转"/>
+    <item
+        android:id="@+id/reading_option_menu_more"
+        android:title="更多"/>
+
+</menu>

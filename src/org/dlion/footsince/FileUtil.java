@@ -1,4 +1,4 @@
-﻿package org.dlion.oldfeel;
+﻿package org.dlion.footsince;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -166,8 +166,8 @@ public class FileUtil {
 	 * 文件详细信息
 	 */
 	public static void fileDetail(Context context, File file) {
-		View view = LayoutInflater.from(context).inflate(
-				R.layout.file_detail, null);
+		View view = LayoutInflater.from(context).inflate(R.layout.file_detail,
+				null);
 		FileInfo info = FileUtil.getFileInfo(file);
 		((TextView) view.findViewById(R.id.file_name)).setText(file.getName());
 		((TextView) view.findViewById(R.id.file_type)).setText(info.type);

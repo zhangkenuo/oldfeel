@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_1" >
+
+    <GridView
+        android:id="@+id/listfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="80dp"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="15dp" >
+    </GridView>
+
+    <ImageView
+        android:id="@+id/book_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="20dp"
+        android:src="@drawable/icon_book_location" />
+
+    <ImageView
+        android:id="@+id/book_network"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingRight="20dp"
+        android:src="@drawable/icon_book_network" />
+
+</RelativeLayout>

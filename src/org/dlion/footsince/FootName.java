@@ -3,8 +3,6 @@
 import java.io.File;
 
 import org.dlion.oldfeel.DBHelper;
-import org.dlion.oldfeel.FileBrowser;
-import org.dlion.oldfeel.FileUtil;
 import org.dlion.oldfeel.R;
 
 import android.app.Activity;
