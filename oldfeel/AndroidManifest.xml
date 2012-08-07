@@ -59,25 +59,17 @@
             android:name="org.dlion.schedule.AlarmRing"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
-<<<<<<< HEAD
-        <activity android:name=".FileBrowser" >
-=======
         <activity android:name="org.dlion.footsince.FileBrowser" >
         </activity>
         <activity android:name="org.dlion.timer.Timer" >
         </activity>
         <activity android:name="org.dlion.mybook.BookLocation" >
->>>>>>> 添加了一个电子书阅读器
         </activity>
         <activity android:name="org.dlion.mybook.BookReading" >
         </activity>
-<<<<<<< HEAD
-        <activity android:name="org.dlion.timer.Timer" >
-=======
-        <activity android:name="org.dlion.mybook.BookReadingSetting" >
+        <activity android:name="org.dlion.mybook.BookReadingConfig" >
         </activity>
-        <activity android:name="org.dlion.mybook.MyBook" >
->>>>>>> 添加了一个电子书阅读器
+        <activity android:name="org.dlion.mybook.BookMain" >
         </activity>
 
         <service

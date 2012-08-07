@@ -40,7 +40,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MyBook extends Activity {
+public class BookMain extends Activity {
 	private NotificationManager notificationManager;
 	private Notification notification;
 
@@ -92,7 +92,7 @@ public class MyBook extends Activity {
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notification = new Notification(R.drawable.ic_launcher, "通知栏标题",
 				System.currentTimeMillis());
-		Intent notificationIntent = new Intent(this, MyBook.class);
+		Intent notificationIntent = new Intent(this, BookMain.class);
 		notificationIntent.putExtra("isNotification", true);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
@@ -133,8 +133,7 @@ public class MyBook extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
-			startActivity(new Intent(MyBook.this,
-					BookReadingSetting.class));
+			startActivity(new Intent(BookMain.this, BookReadingConfig.class));
 			return true;
 		default:
 			break;
@@ -168,7 +167,7 @@ public class MyBook extends Activity {
 					long id) {
 				String pathes = bookList.get(pos).getAbsolutePath();
 				Intent intent = new Intent();
-				intent.setClass(MyBook.this, BookReading.class);
+				intent.setClass(BookMain.this, BookReading.class);
 				intent.putExtra("pathes", pathes);
 				startActivity(intent);
 				bookAdapter.notifyDataSetChanged();

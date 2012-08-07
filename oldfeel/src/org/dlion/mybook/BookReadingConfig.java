@@ -12,7 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class BookReadingSetting extends Activity {
+public class BookReadingConfig extends Activity {
 
 	private TextView notificationStatus;
 	private CheckBox notificationIsChecked;

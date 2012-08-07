@@ -7,16 +7,25 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 
-public class BookReadingSettingUtil {
+public class BookReadingConfigUtil {
 	Context context;
 	SharedPreferences sp;
-	String bookName;
 	Editor ed;
 
-	public BookReadingSettingUtil(Context context) {
+	public BookReadingConfigUtil(Context context, String bookName) {
 		this.context = context;
 		sp = context.getSharedPreferences(bookName, Context.MODE_PRIVATE);
 		ed = sp.edit();
+	}
+
+	public void setCurrentPosition(int currentPosition) {
+		ed.putInt("pageCurrentPosition", currentPosition);
+		ed.commit();
+	}
+
+	public int getCurrentPosition() {
+		int currentPosition = sp.getInt("pageCurrentPosition", 0);
+		return currentPosition;
 	}
 
 	public void setPageFontSize(int fontSize) {
@@ -24,7 +33,7 @@ public class BookReadingSettingUtil {
 		ed.commit();
 	}
 
-	public int getPageFontSize() {
+	public int getFontSize() {
 		int fontSize = sp.getInt("pageFontSize", 16);
 		return fontSize;
 	}
@@ -34,7 +43,7 @@ public class BookReadingSettingUtil {
 		ed.commit();
 	}
 
-	public int getBgStyle() {
+	public int getBackground() {
 		int bgStyle = sp.getInt("pageBgStyle", R.drawable.bg_1);
 		return bgStyle;
 	}
@@ -44,7 +53,7 @@ public class BookReadingSettingUtil {
 		ed.commit();
 	}
 
-	public int getColorStyle() {
+	public int getTextColor() {
 		int colorStyle = sp.getInt("pageColorStyle", Color.BLACK);
 		return colorStyle;
 	}
